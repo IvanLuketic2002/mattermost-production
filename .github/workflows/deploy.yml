@@ -27,6 +27,7 @@ jobs:
           kubectl apply -f k8s/namespace.yml
           kubectl apply -f k8s/postgres.yml
           kubectl apply -f k8s/mattermost.yml
+          kubectl apply -f monitoring/prometheus.yml
 
       - name: Wait for PostgreSQL
         run: kubectl rollout status deployment/postgres -n mattermost --timeout=120s
@@ -34,8 +35,13 @@ jobs:
       - name: Wait for Mattermost
         run: kubectl rollout status deployment/mattermost -n mattermost --timeout=300s
 
+      - name: Wait for Prometheus
+        run: kubectl rollout status deployment/prometheus -n mattermost --timeout=120s
+
       - name: Get pod status
         run: kubectl get pods -n mattermost
 
-      - name: Print URL
-        run: echo "Mattermost URL http://63.183.194.63:30065"
+      - name: Print URLs
+        run: |
+          echo "Mattermost: http://63.183.194.63:30065"
+          echo "Prometheus: http://63.183.194.63:30090"
