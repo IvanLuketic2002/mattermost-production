@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mattermost
+  namespace: mattermost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mattermost
+  template:
+    metadata:
+      labels:
+        app: mattermost
+    spec:
+      containers:
+      - name: mattermost
+        image: mattermost/mattermost-team-edition:latest
+        ports:
+        - containerPort: 8065
+        env:
+        - name: MM_SQLSETTINGS_DRIVERNAME
+          value: postgres
+        - name: MM_SQLSETTINGS_DATASOURCE
+          value: postgres://mattermost:mattermost123@postgres:5432/mattermost?sslmode=disable
+        - name: MM_SERVICESETTINGS_SITEURL
+          value: http://localhost:8065
+        - name: MM_SERVICESETTINGS_LISTENADDRESS
+          value: ":8065"
+        volumeMounts:
+        - name: mattermost-data
+          mountPath: /mattermost/data
+        - name: mattermost-logs
+          mountPath: /mattermost/logs
+        readinessProbe:
+          httpGet:
+            path: /api/v4/system/ping
+            port: 8065
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 10
+        livenessProbe:
+          httpGet:
+            path: /api/v4/system/ping
+            port: 8065
+          initialDelaySeconds: 60
+          periodSeconds: 20
+      volumes:
+      - name: mattermost-data
+        emptyDir: {}
+      - name: mattermost-logs
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mattermost
+  namespace: mattermost
+spec:
+  selector:
+    app: mattermost
+  type: NodePort
+  ports:
+  - port: 8065
+    targetPort: 8065
+    nodePort: 30065
