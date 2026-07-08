@@ -2,10 +2,6 @@
 
 Production-grade deployment of Mattermost (open-source Slack alternative) on Kubernetes (k3s) on AWS EC2. Demonstrates end-to-end DevOps workflow on a real-world SaaS application — infrastructure provisioning, CI/CD, container orchestration, and full observability stack.
 
-## Live Demo
-- **Mattermost:** http://63.183.194.63:30065
-- **Grafana:** http://63.183.194.63:30300 (admin/admin123)
-- **Prometheus:** http://63.183.194.63:30090
 
 ## Architecture
 
